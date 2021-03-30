@@ -142,6 +142,61 @@ class xlsxUtils():
 
         return resultsList[0]
     
+    def updateValues(self, paramsDict, valuesToBeUpdated):
+
+        #Check if 'paramsDict' and 'responseList' are not empty
+        if ((len(paramsDict) == 0) or (len(valuesToBeUpdated) == 0)):
+            errorMessage = "Invalid params. The paramsDict and responseList can not be empty"
+            raise Exception(errorMessage)
+        
+        #Instatiate counters.
+        rowsAffected = 0
+        cellsUpdated = 0
+
+        #Iterate through dataDict keys.
+        for key in paramsDict.keys():
+
+            #Check to see if all headers exist, if not raise Exception.
+            if self.headerDataIndex.get(key) == None:
+                errorMessage = "Couldnt find Index for Header '%s'" % key
+                raise Exception(errorMessage)
+
+        #Iterate through valuesToBeUpdated keys.
+        for key in valuesToBeUpdated.keys():  
+
+            #Check to see if all headers exist, if not raise Exception.
+            if self.headerDataIndex.get(key) == None:
+                errorMessage = "Couldnt find Index for Header '%s'" % key
+                raise Exception(errorMessage)
+
+
+        #For each row, check if all params match, if they do, update the values based on valuesToBeUpdated Dict.
+        for row in range(2, self.sheetMaxRow + 1):
+
+            #Instantiate list of booleans to check if every param in paramsDict was find.
+            controlListOfBooleans = []
+
+            #Append boolean checking if the value of the cell match the param given.
+            for key, value in paramsDict.items():
+                controlListOfBooleans.append(self.sheet.cell(row, self.headerDataIndex.get(key)).value == value)
+            
+            #If all booleans are True, all the params match with cell value,
+            #thus updating the values of the params based on valuesToBeUpdated Dict.
+            if (False not in controlListOfBooleans):
+                rowsAffected += 1
+                for key, value in valuesToBeUpdated.items():
+                    self.sheet.cell(row, self.headerDataIndex.get(key), value)
+                    cellsUpdated += 1
+
+                #Save WorkBook.
+                self.workBook.save(self.path)
+                
+            
+        #If resultsList has more than 1 resultDict, the query found more than 1 result,
+        #thus raising an Exception.
+        #If resultsList doesnt have any resultDict, a Exception will be raised.
+        print("%s rows affected, %s cells updated" % (str(rowsAffected), str(cellsUpdated)))
+    
     def __defineMaxColumn(self):
 
         value = ""
