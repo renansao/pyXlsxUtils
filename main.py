@@ -15,10 +15,11 @@ dataDict = {
 dataDict2 = {
     "cpf":"8888",
     "exec":"exec1",
-    "data": "2022"
+    "data": "2022",
+    "nome": "renan"
 }
 
-reader.insertNewRow(dataDict)
-reader.insertNewRow(dataDict2)
+#reader.insertNewRow(dataDict)
+#reader.insertNewRow(dataDict2)
 
-print(data)
+reader.selectValues(dataDict2, [])
